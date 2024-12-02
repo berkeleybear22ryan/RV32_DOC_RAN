@@ -1,0 +1,2058 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>RV32Documentation</title>
+</head>
+<body>
+<h1>RV32 Documentation: Ryan Allyn Nader</h1>
+
+<hr />
+
+<p><strong>RV32I BASE Integer Instructions</strong></p>
+
+<hr />
+
+<p>Instruction: <mark>add</mark></p>
+
+<ul>
+<li><p>Format: R</p></li>
+<li><p>Name: add</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>add rd rs1 rs2</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>li t0 8
+li t1 10
+add t2 t0 t1
+</code></pre></li>
+<li><p>Description</p>
+
+<p>This instruction takes the value in the <code>x2</code> register and adds it with the value in the <code>x3</code> register. Then after it puts that sum into the <code>x1</code> register.</p>
+
+<p>The code above will put the value 8 into <code>t0</code> and the value 10 into <code>t1</code> then will put the value 18 into <code>t2</code>.</p></li>
+</ul>
+
+<p>Instruction: <mark>addi</mark></p>
+
+<ul>
+<li><p>Format: I</p></li>
+<li><p>Name: add immediate</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>addi rd rs1 imm</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>‌li t0 5
+addi t1 t0 9
+</code></pre></li>
+<li><p>Description</p>
+
+<p>This instruction will put the value 5 into the <code>t0</code> register and will put the value 14 into the <code>t1</code> register.</p></li>
+</ul>
+
+<p>Instruction: <mark>and</mark></p>
+
+<ul>
+<li><p>Format: R</p></li>
+<li><p>Name: and</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>and rd rs1 rs2</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>li t0 0xFFFFFFFF
+li t1 0xFFFFFFF0
+and t2 t0 t1
+</code></pre></li>
+<li><p>Description</p>
+
+<p>This instruction will perform a bitwise logical and on each bit and in this example the value -1 will be put into the <code>t0</code> register, the value -16 will be put into the <code>t1</code> register and the value -16 will be put into the <code>t2</code> register.</p></li>
+</ul>
+
+<p>Instruction: <mark>andi</mark></p>
+
+<ul>
+<li><p>Format: I</p></li>
+<li><p>Name: and immediate</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>andi rd rs1 imm</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>‌li t0 0xFFFFFFFF
+andi t1 t0 0xF
+</code></pre></li>
+<li><p>Description</p>
+
+<p>This instruction will put the value -1 into <code>t0</code> and that value in the <code>t0</code> register will then be and-ed with imm 0xF and thus the <code>t1</code> register will have the value 15.</p></li>
+</ul>
+
+<p>Instruction: <mark>auipc</mark></p>
+
+<ul>
+<li><p>Format: U</p></li>
+<li><p>Name: add upper immediate to pc</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>‌auipc rd imm</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>auipc t0 0x1
+</code></pre></li>
+<li><p>Description</p>
+
+<p>This instruction first gets the upper 20 bits of the PC (program counter) then adds the imm value to that number, once it is done it places these 20 bits in the upper portion of the 32-bit register and fills the right 12-bits with zeros. So assuming the PC register starts at 0 then we will add 0x1 to the upper 20-bits of PC and that value will not change the PC but will just place that new value, 4096 into the <code>t0</code> register.</p></li>
+</ul>
+
+<p>Instruction: <mark>beq</mark></p>
+
+<ul>
+<li><p>Format: SB</p></li>
+<li><p>Name: branch equal</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>beq rs1 rs2 label</code></p></li>
+<li><p>Code:</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<pre><code>main:
+    li t0 34
+    li t1 34
+    beq t0 t1 other
+    li a0 17
+    li a1 5
+    ecall
+    
+other:
+    li t0 22
+    li t1 44
+</code></pre>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<pre><code>main:
+    li t0 34
+    li t1 35
+    beq t0 t1 other
+    li a0 17
+    li a1 5
+    ecall
+     
+other:
+    li t0 22
+    li t1 44
+</code></pre></li>
+<li><p>Description</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<p>In this instruction <code>t0</code> will have the value 22 and <code>t1</code> will have the value 44 because originally <code>t0</code> and <code>t1</code> will both have the value 34 thus when they hit the beq instrution because <code>t0</code> and <code>t1</code> are equal the pc will jump to the other label and set the <code>t0</code> register to 22 and the <code>t1</code> register to 44.</p>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<p>In the second code block the <code>t0</code> register will have the value 34 and the <code>t1</code> register will have the value 35. This happens because <code>t0</code> starts at 34 and <code>t1</code> starts at 35. Then when the beq instruction is hit because the <code>t0</code> register does not equal the <code>t1</code> register the branch to the other label is not taken and the code is exited with exit code 5.</p></li>
+</ul>
+
+<p>Instruction: <mark>bge</mark></p>
+
+<ul>
+<li><p>Format: SB</p></li>
+<li><p>Name: branch greater than or equal</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>bge rs1 rs2 label</code></p></li>
+<li><p>Code:</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<pre><code>main:
+    li t0 15
+    li t1 10
+    bge t0 t1 other
+    li a0 17
+    li a1 5
+    ecall
+    
+other:
+    li t0 22
+    li t1 44
+</code></pre>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<pre><code>main:
+    li t0 15
+    li t1 15
+    bge t0 t1 other
+    li a0 17
+    li a1 5
+    ecall
+    
+    
+other:
+    li t0 22
+    li t1 44
+</code></pre>
+
+<ul>
+<li>code block #3</li>
+</ul>
+
+<pre><code>main:
+    li t0 15
+    li t1 16
+    bge t0 t1 other
+    li a0 17
+    li a1 5
+    ecall
+    
+    
+other:
+    li t0 22
+    li t1 44
+</code></pre></li>
+<li><p>Description</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<p>In this instruction the <code>t0</code> register will have the value 22 and the <code>t1</code> register will have the 44 and will exit with code 0. This happens because the <code>t0</code> register is originally loaded with the value 15 and the <code>t1</code> register is loaded with the value 10. Then when the bge instruction is hit because the <code>t0</code> register is greater then or equal to the <code>t1</code> register the branch to the label other will be taken and then the <code>t0</code> register will be loaded with the value 22 and the <code>t1</code> register will be loaded with the value 44.</p>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<p>In this instruction the same thing is happening that happened in code block #1 execpt that if the two register inputed to the bge are equal the branch will also be taken.</p>
+
+<ul>
+<li>code block #3</li>
+</ul>
+
+<p>In this instruction the <code>t0</code> register will have the value 15 and the <code>t1</code> register will have the value 16 and the program will exit with exit code 5. This will happen beacause now the <code>t1</code> register is greater then the <code>t0</code> register and the program will not branch.</p></li>
+</ul>
+
+<p>Instruction: <mark>bgeu</mark></p>
+
+<ul>
+<li><p>Format: SB</p></li>
+<li><p>Name: branch &gt;= unsigned</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>bgeu rs1 rs2 label</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 -1
+    li t1 5
+    bgeu t0 t1 other
+    li a0 17
+    li a1 5
+    ecall
+    
+other:
+    li t0 22
+    li t1 44
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> register will have the value 22 and the <code>t1</code> register will have the value 44 and the program will have exit code 0. This will happen because the <code>t0</code> register will have the value -1 which in hexidecimal is 0xFFFFFFFF and the <code>t1</code> register will have the value 5. Then when we get to the bgeu instruction it will not interpret the -1 as a signed number and will instead read it as an unsigned number. This unsigned number in <code>t0</code> will end up being greater then or equal to the <code>t1</code> unsigned register value and thus we will actually branch (If this was just bge we would not branch because it looks at the sign). Then the <code>t0</code> register will be set to 22 and the <code>t1</code> register will be set to 44 and the program will be exited with exit code 0.</p></li>
+</ul>
+
+<p>Instruction: <mark>blt</mark></p>
+
+<ul>
+<li><p>Format: SB</p></li>
+<li><p>Name: branch less than</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>blt rs1 rs2 label</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 10
+    li t1 90
+    blt t0 t1 other
+    li a0 17
+    li a1 5
+    ecall
+    
+
+other:
+    li t0 22
+    li t1 44
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction beacuse the <code>t0</code> register has a value that is less then the <code>t1</code> register the branch will be taken and the value in the <code>t0</code> register will be 22 and the value in the the <code>t1</code> register will be 44. Then the program will exit with code 0.</p></li>
+</ul>
+
+<p>Instruction: <mark>bltu</mark></p>
+
+<ul>
+<li><p>Format: SB</p></li>
+<li><p>Name: branch less than unsigned</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>bltu rs1 rs2 label</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 5
+    li t1 -1
+    bltu t0 t1 other
+    li a0 17
+    li a1 5
+    ecall
+    
+other:
+    li t0 22
+    li t1 44
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the value of <code>t0</code> will be 22 and the value of <code>t1</code> will be 44, meaning that the branch will also be taken. This seems wrong as the value of <code>t0</code> is not less then the <code>t1</code> but when treating it as unsigned it turns out that <code>t0</code> is less then <code>t1</code> meaning that the branch will be taken and the <code>t0</code> register will be set to 22 and the <code>t1</code> register will be set to 44.</p></li>
+</ul>
+
+<p>Instruction: <mark>bne</mark></p>
+
+<ul>
+<li><p>Format: SB</p></li>
+<li><p>Name: branch not equal</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>bne rs1 rs2 label</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 87
+    li t1 4
+    bne t0 t1 other
+    li a0 17
+    li a1 5
+    ecall
+    
+
+other:
+    li t0 22
+    li t1 44
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> register will be 22 and the <code>t1</code> register will be 44. This will be the case because the <code>t0</code> register is originally 87 and the <code>t1</code> register is originally 4, now because the two registers are not equal the program will branch to other thus setting the two registers to the values mentioned at the begining, <code>t0</code>, 22 and <code>t1</code>, 44.</p></li>
+</ul>
+
+<p>Instruction: <mark>ebreak</mark></p>
+
+<ul>
+<li><p>Format: I</p></li>
+<li><p>Name: environment break</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>ebreak</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 87
+    li t1 4
+    ebreak
+    bne t0 t1 other
+    li a0 17
+    li a1 5
+    ecall
+    
+
+other:
+    li t0 22
+    li t1 44
+</code></pre></li>
+<li><p>Description</p>
+
+<p>The ebreak instruction will stop the program from running at that point and serves as a breakpoint and in order to run the rest you simply just click the run command again and it will stop at either the next ebreak or the end of the program.</p></li>
+</ul>
+
+<p>Instruction: <mark>ecall</mark></p>
+
+<ul>
+<li><p>Format: I</p></li>
+<li><p>Name: environment call</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>ecall</code></p></li>
+<li><p>Code:</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<pre><code>main:
+    li t0 88
+    li t1 99
+        
+    li a0 1
+    li a1 100
+    ecall
+        
+    li t0 11
+    li t1 22
+</code></pre>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<pre><code>.text
+    
+main:
+    li t0 88
+    li t1 99
+    
+    li a0 4
+    la a1 string1
+    ecall
+    
+    li t0 11
+    li t1 22
+    
+.data
+    
+string1:
+    .string &quot;Hello World!\n&quot;
+</code></pre>
+
+<ul>
+<li>code block #3</li>
+</ul>
+
+<pre><code>.text
+    
+main:
+    li t0 88
+    li t1 99
+    
+    li a0 10
+    ecall
+    
+    li t0 11
+    li t1 22
+</code></pre>
+
+<ul>
+<li>code block #4</li>
+</ul>
+
+<pre><code>.text
+    
+main:
+    li t0 88
+    li t1 99
+    
+    li a0 11
+    li a1 33
+    ecall
+    
+    li t0 11
+    li t1 22
+</code></pre>
+
+<ul>
+<li>code block #5</li>
+</ul>
+
+<pre><code>.text
+    
+main:
+    li t0 88
+    li t1 99
+    
+    li a0 17
+    li a1 52
+    ecall
+    
+    li t0 11
+    li t1 22
+</code></pre></li>
+<li><p>Description</p>
+
+<pre><code>    1: printInteger(sim)
+    
+    4: printString(sim)
+    
+    9: sbrk(sim)
+    
+    10: exit(sim)
+    
+    11: printChar(sim)
+    
+    17: exitWithCode(sim)
+</code></pre>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<p>In this instruction the <code>t0</code> register has the value 88 and the <code>t1</code> register has the value 99 then in order to make the ecall we have to load the number type to <code>a0</code> register, here we loaded 1, this corresponds to printInteger(sim) then we put the arguement that we want to print as an integer into the <code>t1</code> register, here we put 100. The next instruction is the ecall so that will print 100 to the console. Lastly the program will continue to run until after we load the <code>t0</code> and <code>t1</code> registers and finish the program.</p>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<p>In this code block the <code>a0</code> register has the value 4 which means that when the ecall is made the printString(sim) definition will be used. Then because the address, string1 was loaded into register <code>a1</code> the that is where the argument that should be printed out needs to go and thus the console will have the string &quot;Hello World!&quot; printed out and after the ecall the code will continue as usual and the <code>t0</code> register will have the value 11 and the <code>t1</code> register will have the value 22.</p>
+
+<ul>
+<li>code block #3</li>
+</ul>
+
+<p>In this code block we loaded the <code>a0</code> register with the number 10 this means that we will call exit(sim) there is no need for a value in the <code>a1</code> register and what this will do is just exit the code at the ecall. This means that the final values in the <code>t0</code> register is 88 and the final value in the <code>t1</code> register is 99 and then the code will exit with exit code 0.</p>
+
+<ul>
+<li>code block #4</li>
+</ul>
+
+<p>In this code block the <code>a0</code> register is loaded with the value 11 which means that we will follow the printChar(sim) rule. Now the value that I pass into the <code>a1</code> register will be ascii char associated with the ascii table. In this example I loaded a 33 this value corresponds to and &quot;!&quot; mark so that value will be printed to the console when the ecall is made. Then the rest of the program will continue to run and the <code>t0</code> register will have the value 11 and the <code>t1</code> register will have the value 22.</p>
+
+<ul>
+<li>code block #5</li>
+</ul>
+
+<p>In this code block the <code>a0</code> register is loaded with the value 17 this means that the exitWithCode(sim) rule will be followed. Here the <code>a1</code> regster will be used to specify the exit code number that is desired. Here the <code>a1</code> register has the value 52, what this means is that the when the ecall is made the program will exit with the exit code 52. As a result the <code>t0</code> register will have the value 88 and the <code>t1</code> register will have the value 99 because the program stopped at the ecall.</p></li>
+</ul>
+
+<p>Instruction: <mark>jal</mark></p>
+
+<ul>
+<li><p>Format: UJ</p></li>
+<li><p>Name: jump and link</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>jal rs1 label</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    
+    li t0 2
+    li t1 3
+    nop
+    jal ra dog
+    
+    li t0 44
+    li t1 55
+    
+dog:
+    li t0 7
+    li t1 8
+</code></pre></li>
+<li><p>Description</p>
+
+<p>This instruction starts by putting the value 2 in the <code>t0</code> register and the value 3 in the <code>t1</code> register. After we have a nop instruction which does nothing but does count as an instruction. The jal instruction is next and what it does is put the value of pc + 4 into the <code>ra</code> register which is this case assuming that the first instruction is at position 0 then the <code>ra</code> register will have the value 16 becaue pc + 4 is the next instruction right after the jal and each instruction is 4 bytes. And now after the <code>ra</code> register has the value pc + 4 the pc value will now be set to the label dog, meaning that the program will jump to the dog label. Thus by the end of this program the <code>t0</code> register will have the value 7 and the <code>t1</code> register will have the value 8.</p></li>
+</ul>
+
+<p>Instruction: <mark>jalr</mark></p>
+
+<ul>
+<li><p>Format: I</p></li>
+<li><p>Name: jump and link register</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>jalr rs1 rs2 imm</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    la t0 location
+    li t1 2
+    li t2 3
+    jalr ra t0 4
+    
+    li t1 4
+    li t2 5
+    
+    
+location:
+    li t1 6
+    li t2 7
+</code></pre></li>
+<li><p>Description</p>
+
+<p>For this instruction the <code>t0</code> register has the address of the location label here which is 28 if we consider the first instruction at location 0. After we load the value 2 into the <code>t1</code> register and the value 3 into the <code>t2</code> register. Now on the jalr instruction we first load pc + 4 which in this case is 20 into the <code>ra</code> register. After this value is loaded we then set the pc to the location stored in the register <code>t0</code> + the immediate which in this case is 4. This jumps the code one instruction into the location label which in this case means that we start at the instruction at 32 byte position which is <code>li t2 7</code> this skips the instruction <code>li t1 6</code> so at the end of the program <code>t0</code> will be 28, <code>t1</code> will be 2 and <code>t2</code> will be 7.</p></li>
+</ul>
+
+<p>Instruction: <mark>lb</mark></p>
+
+<ul>
+<li><p>Format: I</p></li>
+<li><p>Name: load byte</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>lb rs1 imm(rs2)</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 0x00000000
+    li t1 5
+    sw t1 1(t0)
+    lb t2 1(t0)
+</code></pre></li>
+<li><p>Description</p>
+
+<p>For this instruction <code>t0</code> has the value 0. Then <code>t1</code> has the value 5 and then we store the value in <code>t1</code> into position of the value in <code>t0</code> which is 0 + the immediate which in this case is 1. So now the value in <code>t1</code>, 5 will be stored into position 1 in memory on the stack. Now that this value is stored on the stack we can simple load the byte from position <code>t0</code> + 1 into the register <code>t2</code> so that after this program finishes, <code>t0</code> will have the value 0, <code>t1</code> will have the value 5 and <code>t2</code> will also have the value 5.</p>
+
+<p>It is also important to note that because RISC-V is little endian that means that the least significant byte gets the smallest address.</p>
+
+<p>So in this case when we do <code>sw t1 1(t0)</code> what this does is put the smallest byte which in this case is the decimal value 5 into the smallest address, which in this case is 0x1, then it will put a 0 into the locations 0x2, 0x3, 0x4. This is important to note and the <code>lb t2 1(t0)</code> instruction only applies to the byte 0x1 so there is no confusion but when using other load instructions similiar things will happen with regard to memory being byte addressable and little endian convention.</p></li>
+</ul>
+
+<p>Instruction: <mark>lbu</mark></p>
+
+<ul>
+<li><p>Format: I</p></li>
+<li><p>Name: load byte unsigned</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>lbu rs1 imm(rs2)</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 0x00000000
+    li t1 -5
+    sw t1 1(t0)
+    lbu t2 1(t0)
+</code></pre></li>
+<li><p>Description</p>
+
+<p>For this instruction the <code>t0</code> register has value 0 and the <code>t1</code> register has the value -5. Then this value is stored into memory following little endian convention. This means that that -5 is stored at byte 1 and that instead of placing 0's in byte 2, 3 and 4, the <code>sw t1 1(t0)</code> instruction actually puts -1 or to make more sense 0xFF's in these positions because the number in <code>t1</code> is negative. Then when the <code>lbu t2 1(t0)</code> instruction is called the value in memory at position <code>t0</code> + imm, which in this case equals 1 is the only value loaded into the register <code>t2</code> because it is the unsigned variant the rest of the bits are zero extended meaning that register <code>t2</code> will have the value 0xFB which is 251 in decimal. However if the <code>lbu t2 1(t0)</code> instruction was actually <code>lb t2 1(t0)</code> then it would sign extend the value that is put into the <code>t2</code> register and since it is a 1 then the rest would be 1's and the decimal value would instead be -5.</p></li>
+</ul>
+
+<p>Instruction: <mark>lh</mark></p>
+
+<ul>
+<li><p>Format: I</p></li>
+<li><p>Name: load halfword</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>lh rs1 imm(rs2)</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 0x00000000
+    li t1 -5
+    sw t1 1(t0)
+    lh t2 1(t0)
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> register has the value 0 and the <code>t1</code> register has the value -5. When storing this value into memory it will be at location <code>t0</code> register value + imm, this ends up being 1. So at location 1 the <code>t1</code> register value will be stored into memory. Because the value is negative and we are writing an entire word to memory the location 1 will have the value -5 while locations 2, 3 and 4 will have the value -1. Now when loaded the halfword from memory we will look in location <code>t0</code> + 1 which equals 1 and start at this location, location 1 and then will also look in location 2 and both of these values will be put into register <code>t2</code> (so we would have 0xFFFB) then because it is interphreted as a signed number it will sign extend the bits which means that in this case the <code>t2</code> register will be sign extended with all F's and will have the value -5 (0xFFFFFFFB).</p></li>
+</ul>
+
+<p>Instruction: <mark>lhu</mark></p>
+
+<ul>
+<li><p>Format: I</p></li>
+<li><p>Name: load halfword unsigned</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>lhu rs1 imm(rs2)</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 0x00000000
+    li t1 -5
+    sw t1 1(t0)
+    lhu t2 1(t0)
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> register has the value 0 and the <code>t1</code> register has the value -5. Then when this is stored in memory, at postion 1 will be -5 and at positions 2, 3 and 4 will be -1 because the store word will sign extend the number it the unspecified bits. Then when the <code>lhu t2 1(t0)</code> instruction is called it will load from postions 1 and 2 and will zero extend the rest of the bits because it is assuming that the number is unsigned. So in this example the <code>t1</code> register will have the value -5 (0xFFFFFFFB) and the <code>t2</code> register will have the value 65531 (0x0000FFFB).</p></li>
+</ul>
+
+<p>Instruction: <mark>lui</mark></p>
+
+<ul>
+<li><p>Format: U</p></li>
+<li><p>Name: load upper immediate</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>lui rd imm</code></p></li>
+<li><p>Code:</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<pre><code>main:
+    lui t0 0xAFFFF
+</code></pre>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<pre><code>main:
+    lui t0 0xBF
+</code></pre></li>
+<li><p>Description</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<p>This instruction loads the immediate value 0xAFFFF into the upper 20-bits of the <code>t0</code> register and zero's the lower bits, so the <code>t0</code> register would have the value 0xAFFFF000.</p>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<p>This block does not use all of the 20-bits that it is allowed to so what will happen. The <code>t0</code> register will have the value 0x000BF000, meaning that it will fill the bits from the least significant bit of the upper 20-bits to the most significant bit on the left.</p></li>
+</ul>
+
+<p>Instruction: <mark>lw</mark></p>
+
+<ul>
+<li><p>Format: I</p></li>
+<li><p>Name: load word</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>lw rs1 imm(rs2)</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 3
+    li t1 -2
+    sw t1 1(t0)
+    lw t2 1(t0)
+</code></pre></li>
+<li><p>Description</p>
+
+<p>For this instruction the <code>t0</code> register will have the value 3 and the <code>t1</code> register will have the value -2. Then at memory postion <code>t0</code> + 1 which in this case is 3 + 1, 4 is where the <code>t1</code> register will begin to be stored into the memory. So at position 4 will be the value -2 and at postions 5, 6 and 7 will be -1's because the number we are storing is negative so it will be sign extended. Now with the <code>lw t2 1(t0)</code> instruction starting at memory location <code>t0</code> + 1 which is 4 we will load an entire word (32-bits) into memory. So the values at postions 4, 5, 6 and 7 will be loaded into the <code>t2</code> register so in this case the <code>t2</code> register will have the value -2 (0xFFFFFFFE). </p>
+
+<p>Because registers in RV32 are 32 bits there is no need for a lwu because all 32-bits loaded will fill the entire register.</p></li>
+</ul>
+
+<p>Instruction: <mark>or</mark></p>
+
+<ul>
+<li><p>Format: R</p></li>
+<li><p>Name: or</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>or rd rs1 rs2</code></p></li>
+<li><p>Code:</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<pre><code>main:
+    li t0 -1
+    li t1 0
+        
+    or t2 t0 t1
+</code></pre>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<pre><code>main:
+    li t0 0xFFFFFF00
+    li t1 0x000000FF
+    or t2 t0 t1
+</code></pre></li>
+<li><p>Description</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<p>In this instruction the <code>t0</code> register will have the value -1 (0xFFFFFFFF) and the <code>t1</code> register will have the value 0 (0x00000000). Then the logical or operation will be performed on the <code>t0</code> and <code>t1</code> registers and that value will be put into the <code>t2</code> register, so in this case the <code>t2</code> register will have the value -1 (0xFFFFFFFF).</p>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<p>In this code block the <code>t0</code> register will have the value 0xFFFFFF00 and the <code>t1</code> register will have the value 0x000000FF and then when the logical or is performed the <code>t2</code> register will have the value 0xFFFFFFFF.</p></li>
+</ul>
+
+<p>Instruction: <mark>ori</mark></p>
+
+<ul>
+<li><p>Format: I</p></li>
+<li><p>Name: or immediate</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>ori rd rs1 imm</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 0xFFFFFF00
+    ori t1 t0 0xFF
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> register will have the value 0xFFFFFF00 and then the logical or operation will be performed on <code>t0</code> register value 0xFFFFFF00 and the immediate value 0xFF. The result of this will be put into the <code>t1</code> register, so in this case the <code>t1</code> register will have the value 0xFFFFFFFF.</p></li>
+</ul>
+
+<p>Instruction: <mark>sb</mark></p>
+
+<ul>
+<li><p>Format: S</p></li>
+<li><p>Name: store byte</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>sb rs1 imm(rs2)</code></p></li>
+<li><p>Code:</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<pre><code>main:
+    li t0 2
+    li t1 45
+    sb t1 5(t0)
+</code></pre>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<pre><code>main:
+    li t0 2
+    li t1 257
+    sb t1 5(t0)
+</code></pre></li>
+<li><p>Description</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<p>For this instruction the <code>t0</code> register has the value 2 and the <code>t1</code> register has the value 45. Then when the <code>sb t1 5(t0)</code> instruction is called, this will store in memory position <code>t0</code> + 5, position 7 the byte that is associated with 45 (0x0000002D).</p>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<p>For this instruction the <code>t0</code> register will hold the value 2 (0x00000002) and the <code>t1</code> register will hold the value 257 (0x00000101). The <code>sb t1 5(t0)</code> instruction will store in memory position <code>t0</code> + 5, position 7 the byte from register <code>t1</code> yet register <code>t1</code> has more then a byte of information so it will default by only storing the least significant byte, so in this case the memory location 7 will be the value 0x01 and it will not store the rest of the bytes.</p></li>
+</ul>
+
+<p>Instruction: <mark>sh</mark></p>
+
+<ul>
+<li><p>Format: S</p></li>
+<li><p>Name: store halfword</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>sh rs1 imm(rs2)</code></p></li>
+<li><p>Code:</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<pre><code>main:
+    li t0 2
+    li t1 0x1101
+    sh t1 5(t0)
+</code></pre>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<pre><code>main:
+    li t0 2
+    li t1 0x223311
+    sh t1 5(t0)
+</code></pre></li>
+<li><p>Description</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<p>For this instruction the <code>t0</code> register will have the value 2 and the <code>t1</code> register will have the value 4353 (0x00001101). Then the 0x1101 will be loaded into memory starting at position <code>t0</code> + 5, position 7. Because this is a little endian system the 0x01 will be stored at position 7 and the 0x11 will be stored at position 8.</p>
+
+<p>Note that if you pass in a value that cannot be represented with a halfword (16 bits) then a similar thing will happen like that did in the instruction above, store byte (handled in code block #2).</p>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<p>For this instruction the 0x22 section of 0x223311 will not be put into the memory.</p></li>
+</ul>
+
+<p>Instruction: <mark>sll</mark></p>
+
+<ul>
+<li><p>Format: R</p></li>
+<li><p>Name: shift left</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>sll rd rs1 rs2</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 2
+    li t1 0b0011
+    sll t2 t1 t0
+</code></pre></li>
+<li><p>Description</p>
+
+<p>For this instruction the <code>t0</code> register will have the value 2 and the <code>t1</code> register will have the value 3 (0b0011). Then when the <code>sll t2 t1 t0</code> instruction is called this will perform a logical left shift on the <code>t1</code> register value by <code>t0</code> register value. This value will be put into the <code>t2</code> register so that the <code>t2</code> register will have the value 12 (0b1100).</p>
+
+<p>So this will be a simple: <code>t2 = t1 &lt;&lt; t0</code>.</p></li>
+</ul>
+
+<p>Instruction: <mark>slli</mark></p>
+
+<ul>
+<li><p>Format: I</p></li>
+<li><p>Name: shift left immediate</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>slli rd rs1 imm</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 0b0011
+    slli t1 t0 2
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this example the <code>t0</code> register will have the value 3 (0b0011). This value will be shifted left by the immediate size, in this case 2 and that result will be put into the <code>t1</code> register. So in this case the <code>t1</code> register will have the value 12 (0b1100).</p></li>
+</ul>
+
+<p>Instruction: <mark>slt</mark></p>
+
+<ul>
+<li><p>Format: R</p></li>
+<li><p>Name: set less than</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>slt rd rs1 rs2</code></p></li>
+<li><p>Code:</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<pre><code>main:
+    li t0 2
+    li t1 3
+    slt t2 t0 t1
+</code></pre>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<pre><code>main:
+    li t0 9
+    li t1 4
+    slt t2 t0 t1
+</code></pre></li>
+<li><p>Description</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<p>For this instruction the <code>t0</code> register has the value 2 and the <code>t1</code> register has the value 3. Then the <code>slt t2 t0 t1</code> instruction will look at the value in the <code>t0</code> register and because the value is smaller then the value in the <code>t1</code> register it will set the value in the <code>t2</code> register to 1.</p>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<p>In the situation where the <code>t0</code> register is not smaller then the value in the <code>t1</code> register the value to be set in the <code>t2</code> register will be 0.</p>
+
+<p>Another way to think of it is: <code>t2 = (t0 &lt; t1) ? 1 : 0</code></p></li>
+</ul>
+
+<p>Instruction: <mark>slti</mark></p>
+
+<ul>
+<li><p>Format: I</p></li>
+<li><p>Name: set less than immediate</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>slti rd rs1 imm</code></p></li>
+<li><p>Code:</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<pre><code>main:
+    li t0 8
+    slti t1 t0 66
+</code></pre>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<pre><code>main:
+    li t0 8
+    slti t1 t0 8
+</code></pre></li>
+<li><p>Description</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<p>In this instruction the <code>t0</code> register is set to 8 and the immediate has a value of 66 because the <code>t0</code> register has a value that is less then the immediate value 66 the <code>t1</code> register will have the value 1.</p>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<p>In this instruction the <code>t0</code> register has the value 8 and because the <code>t0</code> register's value is not strictly less then the immediate value the <code>t1</code> register will have the value 0.</p>
+
+<p>Shorthand: <code>t1 = (t0 &lt; imm) ? 1 : 0</code></p></li>
+</ul>
+
+<p>Instruction: <mark>sltiu</mark></p>
+
+<ul>
+<li><p>Format: I</p></li>
+<li><p>Name: set &lt; immediate unsigned</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>sltiu rd rs1 imm</code></p></li>
+<li><p>Code:</p>
+
+<ul>
+<li><p>code block #1
+<code>
+main:
+li t0 -2
+sltiu t1 t0 3
+</code></p></li>
+<li><p>code block #2</p></li>
+</ul>
+
+<pre><code>main:
+    li t0 2
+    sltiu t1 t0 -3
+</code></pre></li>
+<li><p>Description</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<p>In this instruction the <code>t0</code> register will have the value -2 and then when the <code>t0</code> register is compared to the immediate 3, even though as a signed number from the <code>t0</code> register is less then the immediate this instruction looks at the unsigned representation and in that situation the -2 is interphreted as 4294967294 which clearly is not less then 3 so the <code>t1</code> register will be set to 0.</p>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<p>In this instruction the situation is looked at almost the same except it is important to note that the negative immediates will also be treated as unsigned, so you could imagine that the -3 immediate gets converted to 4294967293 as its unsigned representation.</p>
+
+<p>Shorthand: <code>t1 = ((unsigned) t0 &lt; (unsigned) imm) ? 1 : 0</code></p></li>
+</ul>
+
+<p>Instruction: <mark>sltu</mark></p>
+
+<ul>
+<li><p>Format: R</p></li>
+<li><p>Name: set less than unsigned</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>sltu rd rs1 rs2</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 -2
+    li t1 3
+    sltu t2 t0 t1
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this intruction the <code>t0</code> register has the value -2, the <code>t1</code> register has the value 3. When looking to see if the <code>t0</code> register is less then the <code>t1</code> register it seems true yet because the <code>sltu t2 t0 t1</code> instruction treates the values as unsigned, it interprets the -2 in the <code>t0</code> register as 4294967294 and as can be seen the unsigned value in the <code>t0</code> register, 4294967294 is clearly not less then the value in the <code>t1</code> register, 3 so in this case the <code>t2</code> register will be set to 0.</p>
+
+<p>Shorthand: <code>t2 = ((unsigned) t0 &lt; (unsigned) t1) ? 1 : 0</code></p></li>
+</ul>
+
+<p>Instruction: <mark>sra</mark></p>
+
+<ul>
+<li><p>Format: R</p></li>
+<li><p>Name: shift right arithmetic</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>sra rd rs1 rs2</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 2
+    li t1 -4 # 0b100: -4 in two's complement
+    sra t2 t1 t0
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> register will have the value 2 and the <code>t1</code> register will have the value -4 which in hexidecimal is 0xFFFFFFFC. The instruction <code>sra t2 t1 t0</code> will then shift the <code>t1</code> register value by the amount of 2, the value in the <code>t0</code> register. Because this is an arithmetic shift the most significant bits are filled not with just 0's but instead with the sign bit, the most significant bit. So this shift by 2 will turn 0xFFFFFFFC into 0xFFFFFFFF this is -1. Overall, the value in the <code>t1</code> register will be shifted to the right by 2 and that value is -1, and after the -1 will be placed in the <code>t2</code> register.</p>
+
+<p>Shorthand: <code>t2 = t1 airithmetic&gt;&gt; t0</code></p></li>
+</ul>
+
+<p>Instruction: <mark>srai</mark></p>
+
+<ul>
+<li><p>Format: I</p></li>
+<li><p>Name: shift right arithmetic immediate</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>srai rd rs1 imm</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 -4
+    srai t1 t0 2
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> register will have the value -4 (0xFFFFFFFC) and then the <code>srai t1 t0 2</code> instruction will shift the <code>t0</code> value, 0xFFFFFFFC by 2 and because this is an arithmetic shift the sign bit (most significant bit) will be extended insteaded on just adding 0's to the new most significant bits. So when this right arithmetic shift is complete the new value will be 0xFFFFFFFF and this value will be stored in the <code>t1</code> register.</p>
+
+<p>Shorthand: <code>t1 = t0 airithmetic&gt;&gt; imm</code></p></li>
+</ul>
+
+<p>Instruction: <mark>srl</mark></p>
+
+<ul>
+<li><p>Format: R</p></li>
+<li><p>Name: shift right</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>srl rd rs1 rs2</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 2
+    li t1 -4
+    srl t2 t1 t0
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> register will have the value 2 and the <code>t1</code> register will have the value -4 (0xFFFFFFFC). Then after the instruction <code>srl t2 t1 t0</code> the <code>t1</code> register value will be shifted by the value in the <code>t0</code> register, so 0xFFFFFFFC logical&gt;&gt; 2. This is a logical shift so the new right most bits that will be added will not be extensions of the sign bit but will instead be just 0's so the solution will be 1073741823 (0x3FFFFFFF). As can be seem the value was just shifted to the right by 2 and the rightmost bits were just two 0's as is apparent from the number 0x3FFFFFFF as 3 in binary is 0b0011 and here there are two 0's in the front.</p>
+
+<p>Shorthand: <code>t2 = t1 logical&gt;&gt; t0</code></p></li>
+</ul>
+
+<p>Instruction: <mark>srli</mark></p>
+
+<ul>
+<li><p>Format: I</p></li>
+<li><p>Name: shift right immediate</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>srli rd rs1 imm</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 -4
+    srli t1 t0 2
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> register will have the value -4 (0xFFFFFFFC). This value will have a right logical shift by the immediate value 2. Because this is a logical shift to the right the most significant bits will not be extended based on a copy of the sign bit but will instead just be 0's so this will result in 1073741823 (0x3FFFFFFF). This value, 0x3FFFFFFF, will then be put into the <code>t1</code> register.</p>
+
+<p>Shorthand: <code>t1 = t0 logical&gt;&gt; imm</code></p></li>
+</ul>
+
+<p>Instruction: <mark>sub</mark></p>
+
+<ul>
+<li><p>Format: R</p></li>
+<li><p>Name: subtract</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>sub rd rs1 rs2</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 5
+    li t1 6
+    sub t2 t0 t1
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> register will have the value 5 and the <code>t1</code> register will have the value 6. Then when the <code>sub t2 t0 t1</code> instruction is called the result of the <code>t0</code> register minus the <code>t1</code> register will be put into the <code>t2</code> register, thus the <code>t2</code> register will get the value -1.</p>
+
+<p>Shorthand: <code>t2 = t0 - t1</code></p></li>
+</ul>
+
+<p>Instruction: <mark>sw</mark></p>
+
+<ul>
+<li><p>Format: S</p></li>
+<li><p>Name: store word</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>sw rs1 imm(rs2)</code></p></li>
+<li><p>Code:</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<pre><code>main:
+    li t0 3
+    li t1 91 # 0x5B
+    sw t1 2(t0)
+</code></pre>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<pre><code>main:
+    li t0 3
+    li t1 -91
+    sw t1 2(t0)
+</code></pre></li>
+<li><p>Description</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<p>In this instruction the <code>t0</code> register has the value 3 and the <code>t1</code> register has the value 91. Then after the <code>sw t1 2(t0)</code> instruction the <code>t1</code> register value, 91 will be stored into memory at location <code>t0</code> + imm, in this case 3 + 2, this at location 5 in memory is where the instruction will begin to store the entire word (32-bits). So at location 5 the 91 value will be stored and then at 6, 7 and 8 will just be the sign extensions of the number so in this ase because the value is positive 91, locations 6, 7 and 8 will just have the value 0.</p>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<p>In this code block the same thing will apply as in code block #1 except now that the <code>t1</code> register is negative the memory will instead of just adding leading zeros will now add -1's into locations 6, 7 and 8. This makes sense because the value stored in the 32-bit register will just be copied over and -91 in hexidecimal is just 0xFFFFFFA5.</p></li>
+</ul>
+
+<p>Instruction: <mark>xor</mark></p>
+
+<ul>
+<li><p>Format: R</p></li>
+<li><p>Name: xor</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>xor rd rs1 rs2</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 0xFFFFFFFF
+    li t1 0xFFFFFFFF
+    xor t2 t0 t1
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> register will store the value 0xFFFFFFFF and the <code>t1</code> register will store the value 0xFFFFFFFF. Then after the instruction <code>xor t2 t0 t1</code>, the <code>t0</code> register will be bitwise xor-ed with the <code>t1</code> register and this result will be 0 because something xor-ed with itself will just be 0, so the <code>t2</code> register will have the value 0.</p>
+
+<ul>
+<li>xor truth table</li>
+</ul>
+
+<pre><code>A: 0 -- B: 0 -- Out: 0
+A: 0 -- B: 1 -- Out: 1
+A: 1 -- B: 0 -- Out: 1
+A: 1 -- B: 1 -- Out: 0
+</code></pre>
+
+<p>Shorthand: <code>t2 = t0 ^ t1</code></p></li>
+</ul>
+
+<p>Instruction: <mark>xori</mark></p>
+
+<ul>
+<li><p>Format: I</p></li>
+<li><p>Name: xor immediate</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>xori rd rs1 imm</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 0xFFFFFFFF
+    xori t1 t0 -1 # -1 = 0xFFFFFFFF
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> register gets set to -1 (0xFFFFFFFF). Then the <code>t0</code> register is xor-ed with -1 (0xFFFFFFFF). When you xor a value by itself the value is 0. This value is stored in the <code>t1</code> register.</p>
+
+<p>Shorthand: <code>t1 = t0 ^ imm</code></p></li>
+</ul>
+
+<hr />
+
+<p><strong>RV32I BASE Common Additions</strong></p>
+
+<hr />
+
+<p>Instruction: <mark>sge</mark></p>
+
+<ul>
+<li><p>Format: n/a</p></li>
+<li><p>Name: set greater equal</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>sge rd rs1 rs2</code></p></li>
+<li><p>Code:</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<pre><code>main:
+    li t0 -2
+    li t1 3
+    sge t2 t1 t0
+</code></pre>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<pre><code>main:
+    li t0 -2
+    li t1 -2
+    sge t2 t1 t0
+</code></pre></li>
+<li><p>Description</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<p>In this instruction the <code>t0</code> register will hold the value -2 and the <code>t1</code> register will hold the value 3. Because the <code>t1</code> register is greater then or equal to the <code>t0</code> register the <code>t2</code> register value will be set to 1.</p>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<p>In this sinstruction something similar to code block #1 is happening yet here it shows that even if the <code>t1</code> and <code>t0</code> registers have equal value then the <code>t2</code> register will still have the value 1 put inside instead of 0.</p>
+
+<p>Shorthand: <code>t2 = (t1 &gt;= t0) ? 1 : 0</code></p></li>
+</ul>
+
+<p>Instruction: <mark>sgeu</mark></p>
+
+<ul>
+<li><p>Format: n/a</p></li>
+<li><p>Name: set greater equal unsigned</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>sgeu rd rs1 rs2</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 -2
+    li t1 3
+    sgeu t2 t1 t0
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> register will have the value -2 and the <code>t1</code> register will have the value 3. Then even though the <code>t1</code> register value is greater then or equal to the <code>t0</code> regsiter when interpreted as a signed number this is no longer true as the <code>sgeu t2 t1 t0</code> instruction tells the computer to look at this numbers as their unsigned counterpart. So in this case the <code>t0</code> registers -2 value is viewed as 4294967294 and the <code>t1</code> register value 3 is looked at as 3. Now we can see that when viewed as an unsigned number the <code>t1</code> unsigned register value 3 is no longer greater then or equal to the <code>t0</code> unsigned register value 4294967294 and as a result the <code>t2</code> register will be set to 0.</p>
+
+<p>Shorthand: <code>t2 = ((unsigned) t1 &gt;= (unsigned) t0) ? 1 : 0</code></p></li>
+</ul>
+
+<hr />
+
+<p><strong>RV32I Pseudo Instructions</strong></p>
+
+<hr />
+
+<p>Instruction: <mark>beqz</mark></p>
+
+<ul>
+<li><p>Format: n/a</p></li>
+<li><p>Name: branch = zero</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>beqz rs1 label</code></p></li>
+<li><p>Translation</p>
+
+<p><code>beq rs1 x0 label</code></p></li>
+<li><p>Code:</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<pre><code>main:
+    li t0 5
+    beqz t0 loop
+    li a0 17
+    li a1 2
+    ecall
+        
+loop:
+    li t0 45
+</code></pre>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<pre><code>main:
+    li t0 0
+    beqz t0 loop
+    li a0 17
+    li a1 2
+    ecall
+        
+loop:
+    li t0 45
+</code></pre></li>
+<li><p>Description</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<p>In this instruction the <code>t0</code> register has the value 5 then because the <code>t0</code> register value is not equal to 0 the branch to the loop label is not taken and then the program exits with exit code 2.</p>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<p>In this instruction because the <code>t0</code> register starts off as equal to 0 now the branch will be taken because the <code>t0</code> register is equal to 0. So we will branch to the loop label, then the <code>t0</code> register will be set to 45 and the program will exit with code 0.</p>
+
+<p>Shorthand: <code>‌go to loop label iff t0 == 0</code></p></li>
+</ul>
+
+<p>Instruction: <mark>bnez</mark></p>
+
+<ul>
+<li><p>Format: n/a</p></li>
+<li><p>Name: branch != zero</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>bnez rs1 label</code></p></li>
+<li><p>Translation</p>
+
+<p><code>bne rs1 x0 label</code></p></li>
+<li><p>Code:</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<pre><code>main:
+    li t0 0
+    bnez t0 loop
+    li a0 17
+    li a1 2
+    ecall
+        
+loop:
+    li t0 45
+</code></pre>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<pre><code>main:
+    li t0 -2
+    bnez t0 loop
+    li a0 17
+    li a1 2
+    ecall
+        
+loop:
+    li t0 45
+</code></pre></li>
+<li><p>Description</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<p>In this instruction the <code>t0</code> register will be set to 0 and because the <code>t0</code> register is equal to 0 the branch will not be taken and the program will exit with code 2.</p>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<p>In this instruction the <code>t0</code> register is equal to -2 at the start so because the <code>t0</code> register is not equal to 0 the branch to the loop label will be taken and the <code>t0</code> register will be set to 45 and the program will exit with code 0.</p>
+
+<p>Shorthand: <code>‌go to loop label iff t0 != 0</code></p></li>
+</ul>
+
+<p>Instruction: <mark>j</mark></p>
+
+<ul>
+<li><p>Format: n/a</p></li>
+<li><p>Name: jump</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>j label</code></p></li>
+<li><p>Translation</p>
+
+<p><code>jal x0 label</code></p></li>
+<li><p>Code:</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<pre><code>main:
+    li t0 -2
+    j loop
+    li t0 98
+        
+loop:
+    li t0 45
+</code></pre>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<pre><code>main:
+    li t0 -2
+    j loop
+    li a0 17
+    li a1 2
+    ecall
+        
+loop:
+    li t0 45
+    ret
+</code></pre></li>
+<li><p>Description</p>
+
+<ul>
+<li>code block #1</li>
+</ul>
+
+<p>In this instruction the <code>t0</code> register is set to -2. Then the jump instruction is hit and the program will jump to the loop label yet will not store pc + 4 into a register (as if it was trying to save pc + 4 into the <code>x0</code> register which is hardwired to 0 and cannot be changed), so it will just jump to the label loop and continue onward. Thus it will set the <code>t0</code> register to 45 and then the program will exit with code 0.</p>
+
+<ul>
+<li>code block #2</li>
+</ul>
+
+<p>In this code block we will have an infinite loop as the <code>j loop</code> instruction does not save pc + 4 into the <code>ra</code> register.</p></li>
+</ul>
+
+<p>Instruction: <mark>jr</mark></p>
+
+<ul>
+<li><p>Format: n/a</p></li>
+<li><p>Name: jump register</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>jr rs1</code></p></li>
+<li><p>Translation</p>
+
+<p><code>jalr x0 rs1 0‌</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    la t0 loop
+    jr t0
+    li a0 17
+    li a1 2
+    ecall
+    
+loop:
+    li t0 33
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> register will get the address of the loop label which in this case is 24 because each instruction is 4 bytes. Then the <code>jr t0</code> instruction will set the pc to the value in <code>t0</code> which is effectivly jumping to the loop label. This instruction will not store the pc + 4 value which can be seen from the translated instruction in which that register would correspond to something like <code>x0</code> which cannot be changed as it is hardwired to 0. So once this instruction jumps to the loop label it will then set <code>t0</code> to 33 and then exit with code 0.</p></li>
+</ul>
+
+<p>Instruction: <mark>la</mark></p>
+
+<ul>
+<li><p>Format: n/a</p></li>
+<li><p>Name: load address</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>la rd label</code></p></li>
+<li><p>Translation</p>
+
+<pre><code>auipc rd label[31:12] # for some reason cannot get the index to work
+addi rd rd label[11:0] # ... this instruction not working with above
+#--------OR-----------
+li rd label
+#--------OR-----------
+addi rd rd label
+</code></pre></li>
+<li><p>Code:</p>
+
+<pre><code>.text
+main:
+    li t1 2
+    li t2 3
+    la t0 loop1 # turns into 2 base instructions: 
+                            # auipc x5 0
+                            # addi x5 x5 32
+    jalr ra t0 0
+    li t1 4
+    li t2 5
+        
+    li a0 17
+    li a1 102
+    ecall
+    
+    
+loop1:
+    li t1 6
+    li t2 7
+        
+    li a0 4
+    la a1 string1 # turns into 2 base instructions: 
+                                # auipc x11 65536
+                                # addi x11 x11 -52
+    ecall
+        
+    li a0 0
+    
+.data
+string1:
+    .string &quot;Hello World!\n&quot;
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t1</code> register will first have the value 2 and the <code>t2</code> register will have the value 3. Then when the <code>la t0 loop1</code> instruction is translated to <code>auipc x5 0</code> and <code>addi x5 x5 32</code> so this sets the <code>t0</code> register (<code>x5</code>) to the current pc which in this case is 8 because the pc starts at 0 and increments by 4 each time because each instruction is 4 bytes. Then the second part <code>addi x5 x5 32</code> simply adds 8 + 32 which is 40, so <code>t0</code> will store 40. The reason that we are adding 32 is because the I want to skip the next 8 instructions (remember that <code>la t0 loop1</code> counts as 2 instructions <code>auipc x5 0</code> and <code>addi x5 x5 32</code>) so then understanding the fact that each intruction is 4 bytes we simply muiltply the two values (8 * 4) to find the distance away, 32. This value is added with the location that we are currently located in, 8 because we are at the start of the 3rd insruction (again each instruction is 4 bytes) so the first two are counted (4 * 2) which gives us 8 as the current pc. Now that we have done all the calculation we can see why the <code>t0</code> register has the value 40. After this we will call the <code>jalr ra t0 0</code> instruction to set the <code>ra</code> register to the pc + 4, then we set the pc to the location in the <code>t0</code> register + the immediate, which in this case is 0. Now that the pc is set to 40 we are at the start of the loop1 label, at instruction <code>li t1 6</code>. At this point we will update the <code>t1</code> register to have the value 6, then we will update the <code>t2</code> register to have the value 7. Next will we load 4 into the <code>a0</code> register and then we will load the location of string1 (in this case: 0x10000000) into the <code>a1</code> register. Then making an ecall here with print format set to string will print the item at location <code>a1</code> to the console as a string. Then the <code>li a0 0</code> is to put the exit code to 0 as is expected when there is no runtime error with the program.</p>
+
+<p>Note: It is important to put the string1 label and code: <code>.string &quot;Hello World!\n&quot;</code> into the <code>.data</code> section of memeory otherwise it will not print to console, not sure why yet (I think that is where venus looks for it).</p></li>
+</ul>
+
+<p>Instruction: <mark>li</mark></p>
+
+<ul>
+<li><p>Format: n/a</p></li>
+<li><p>Name: load immediate</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>li rd imm</code></p></li>
+<li><p>Translation</p>
+
+<pre><code>lui rd imm[31:12]
+addi rd rd imm[11:0]
+#------BOOK-SAYS-----------
+# myriad sequences
+#------REMEMBER------------
+# this translation above is not a perfect translation because ...
+# of the 0xDEADBEEF example ...
+lui rd 0xDEADC
+addi rd rd 0xFFFFFEEF
+# need to start with this: 0xDEADC because ...
+# ... the 0xFFFFFEEF with be sign extended and making the value 1 less ...
+# ... need to start one higher then hex B, that is why it is hex C.
+</code></pre></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 2
+    li t1 3
+    li t2 0xDEADBEEF
+</code></pre></li>
+<li><p>Description</p>
+
+<p>Fact: This allows for a 32-bit immediate.</p>
+
+<p>This code simply loads the <code>t0</code> register with the value 2, the <code>t1</code> register with the value 3 and the <code>t2</code> register with the value -559038737 (0xDEADBEEF). Remember that this instruction can take up to a 32-bit immediate.</p></li>
+</ul>
+
+<p>Instruction: <mark>mv</mark></p>
+
+<ul>
+<li><p>Format: n/a</p></li>
+<li><p>Name: move</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>mv rd rs1</code></p></li>
+<li><p>Translation</p>
+
+<p><code>addi rd rs1 0</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 5
+    li t1 2
+    mv t1 t0
+</code></pre></li>
+<li><p>Description</p>
+
+<p>This instruction will first put 5 in the <code>t0</code> register and then 2 into the <code>t1</code> register. Then when the <code>mv t1 t0</code> command is called this will put the <code>t0</code> register value into the <code>t1</code> register, so after this call the <code>t0</code> and <code>t1</code> register will have the value 5.</p>
+
+<p>Shorthand: <code>t1 = t0</code></p></li>
+</ul>
+
+<p>Instruction: <mark>neg</mark></p>
+
+<ul>
+<li><p>Format: n/a</p></li>
+<li><p>Name: negate</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>neg rd rs1</code></p></li>
+<li><p>Translation</p>
+
+<p><code>sub rd x0 rs1</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 15
+    neg t1 t0
+</code></pre></li>
+<li><p>Description</p>
+
+<p>This instruction will set the <code>t0</code> register to 15 and the <code>t1</code> register to -15.</p>
+
+<p>Shorthand: <code>t1 = -t0</code></p></li>
+</ul>
+
+<p>Instruction: <mark>nop</mark></p>
+
+<ul>
+<li><p>Format: n/a</p></li>
+<li><p>Name: no operation</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>nop</code></p></li>
+<li><p>Translation</p>
+
+<p><code>addi x0 x0 0</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 29
+    li t1 31
+    nop
+    nop
+    li t0 199
+    li t1 -22
+</code></pre></li>
+<li><p>Description</p>
+
+<p>Note: The nop instruction does nothing.</p>
+
+<p>In this instruction the <code>t0</code> register will first be set to 29 and the <code>t1</code> register will be set to 31. Then the two nop's will be executed and will do nothing. Then the <code>t0</code> register will be set to 199 and the <code>t1</code> register will be set to -22.</p></li>
+</ul>
+
+<p>Instruction: <mark>not</mark></p>
+
+<ul>
+<li><p>Format: n/a</p></li>
+<li><p>Name: not</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>not rd rs1</code></p></li>
+<li><p>Translation</p>
+
+<p><code>xori rd rs1 -1</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 0x0000FFFF
+    li t1 0x0
+    not t1 t0
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> register will be set to 0x0000FFFF and the <code>t1</code> register will be set to 0x00000000, then when the <code>not t1 t0</code> instruction is performed the not of the <code>t0</code> register will be put into the <code>t1</code> register, which is 0xFFFF0000.</p>
+
+<p>Shorthand: <code>t1 = ~t0</code></p></li>
+</ul>
+
+<p>Instruction: <mark>ret</mark></p>
+
+<ul>
+<li><p>Format: n/a</p></li>
+<li><p>Name: return</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>ret</code></p></li>
+<li><p>Translation</p>
+
+<p><code>jalr x0 ra 0</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 5
+    li t1 6
+        
+    jal ra function1
+        
+    li a0 17
+    li a1 43
+    ecall
+    
+function1:
+    li t0 7
+    li t1 8
+        
+    ret
+        
+    li a0 17
+    li a1 109
+    ecall
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> is first set to 5 and the <code>t1</code> register is set to 6 and then the program jumps to function1 label and that sets the <code>t0</code> label to 7 and the <code>t1</code> label to 8. Then when the <code>ret</code> instruction is hit the program will jump back to where the <code>ra</code> register had previously been set which in this case is 12 because that is where the <code>li a0 17</code> instruction is located. So we will jump back up and set the <code>a0</code> register to 17 and the <code>a1</code> register to 43. Then once the ecall is made the program will exit with exit code 43.</p></li>
+</ul>
+
+<p>Instruction: <mark>seqz</mark></p>
+
+<ul>
+<li><p>Format: n/a</p></li>
+<li><p>Name: set = zero</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>‌</code></p></li>
+<li><p>Translation</p>
+
+<p><code>‌</code></p></li>
+<li><p>Code:</p>
+
+<p><code>‌</code></p></li>
+<li><p>Description</p>
+
+<p>put text here</p></li>
+</ul>
+
+<p>Instruction: <mark>snez</mark></p>
+
+<ul>
+<li><p>Format: n/a</p></li>
+<li><p>Name: set != zero</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>‌</code></p></li>
+<li><p>Translation</p>
+
+<p><code>‌</code></p></li>
+<li><p>Code:</p>
+
+<p><code>‌</code></p></li>
+<li><p>Description</p>
+
+<p>put text here</p></li>
+</ul>
+
+<hr />
+
+<p><strong>RV32I Arithmetic Core Instruction Set</strong></p>
+
+<p><strong>(RV32M Multiply Extension)</strong></p>
+
+<hr />
+
+<p>Instruction: <mark>mul</mark></p>
+
+<ul>
+<li><p>Format: R</p></li>
+<li><p>Name: multiply</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>mul rd rs1 rs2</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 3
+    li t1 2
+    mul t2 t0 t1
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> register will have the value 3 and the <code>t1</code> register will have the value 2. Then the result 3 multiplied by 2, which is 6 will be put into the <code>t2</code> register.</p>
+
+<p>Shorthand: <code>t2 = t0 * t1</code></p></li>
+</ul>
+
+<p>Instruction: <mark>div</mark></p>
+
+<ul>
+<li><p>Format: R</p></li>
+<li><p>Name: divide</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>div rd rs1 rs2</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 -8
+    li t1 4
+    div t2 t0 t1
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> register will have the value -8, the <code>t1</code> instruction will have the value 4. Then -8 will be divided by 4 and that result, -2 will be put into the <code>t2</code> register.</p>
+
+<p>Shorthand: <code>t2 = t0 / t1</code></p></li>
+</ul>
+
+<p>Instruction: <mark>divu</mark></p>
+
+<ul>
+<li><p>Format: R</p></li>
+<li><p>Name: divide unsigned</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>divu rd rs1 rs2</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 -8
+    li t1 4
+    divu t2 t0 t1
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> reggister holds that value -8 which is interpreted as its unsigned variant, 4294967288. Then the <code>t1</code> register has the value 4 whose unsigned value is also 4. Then a divide operation is performed on the unsigned values. So it will be 4294967288/4, this equals 1073741822, so that value will be put into register <code>t2</code>.</p>
+
+<p>Shorthand: <code>t2 = (unsigned) t0 / (unsigned) t1</code></p></li>
+</ul>
+
+<p>Instruction: <mark>rem</mark></p>
+
+<ul>
+<li><p>Format: R</p></li>
+<li><p>Name: remainder</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>rem rd rs1 rs2</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 11
+    li t1 4
+    div t3 t0 t1
+    rem t2 t0 t1
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> register has the value 11, the <code>t1</code> register has the value 4, the <code>t2</code> register has the value <code>t0 % t1</code>, 3 and the <code>t3</code> register has the value <code>t0 / t1</code>, 2.</p>
+
+<p>Shorthand: <code>t2 = t0 % t1</code></p></li>
+</ul>
+
+<p>Instruction: <mark>remu</mark></p>
+
+<ul>
+<li><p>Format: R</p></li>
+<li><p>Name: remainder unsigned</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>remu rd rs1 rs2</code></p></li>
+<li><p>Code:</p>
+
+<pre><code>main:
+    li t0 -11
+    li t1 4
+    remu t2 t0 t1
+</code></pre></li>
+<li><p>Description</p>
+
+<p>In this instruction the <code>t0</code> register has the value -11, but that has an unsigned value of 4294967285. The <code>t1</code> register has a value of 4 and has an unsigned value of still 4. Then when you take the remainder of <code>4294967285 % 4</code>, you get 1, this result is put into <code>t2</code>.</p>
+
+<p>Shorthand: <code>t2 = (unsigned) t0 % (unsigned) t1</code></p></li>
+</ul>
+
+<hr />
+
+<p><strong>RV32I Directives</strong></p>
+
+<hr />
+
+<p>Directive: <mark>.globl</mark></p>
+
+<ul>
+<li><p>Format:</p></li>
+<li><p>Name:</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>‌</code></p></li>
+<li><p>Code:</p>
+
+<p><code>‌</code></p></li>
+<li><p>Description</p>
+
+<p>put text here</p></li>
+</ul>
+
+<p>Directive: <mark>.data</mark></p>
+
+<ul>
+<li><p>Format:</p></li>
+<li><p>Name:</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>‌</code></p></li>
+<li><p>Code:</p>
+
+<p><code>‌</code></p></li>
+<li><p>Description</p>
+
+<p>put text here</p></li>
+</ul>
+
+<p>Directive: <mark>.string</mark></p>
+
+<ul>
+<li><p>Format:</p></li>
+<li><p>Name:</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>‌</code></p></li>
+<li><p>Code:</p>
+
+<p><code>‌</code></p></li>
+<li><p>Description</p>
+
+<p>put text here</p></li>
+</ul>
+
+<p>Directive: <mark>.text</mark></p>
+
+<ul>
+<li><p>Format:</p></li>
+<li><p>Name:</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>‌</code></p></li>
+<li><p>Code:</p>
+
+<p><code>‌</code></p></li>
+<li><p>Description</p>
+
+<p>put text here</p></li>
+</ul>
+
+<p>Directive: <mark>.align</mark></p>
+
+<ul>
+<li><p>Format:</p></li>
+<li><p>Name:</p></li>
+<li><p>Example Structure:</p>
+
+<p><code>‌</code></p></li>
+<li><p>Code:</p>
+
+<p><code>‌</code></p></li>
+<li><p>Description</p>
+
+<p>put text here</p></li>
+</ul>
+</body>
+</html>
